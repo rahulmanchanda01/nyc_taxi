@@ -75,7 +75,11 @@ nyc_final = nyc_taxi100k.append(nyc_taxi100_200k).append(nyc_taxi200k_end)
 nyc_final.to_csv('nyc_final.csv')
 
 nyc_final['dropoff_zip'] = nyc_final.apply(lambda x : 
-    cordnts_zip(x['dropoff_latitude'],x['dropoff_longitude']),axis=1)  
+    cordnts_zip(x['dropoff_latitude'],x['dropoff_longitude']),axis=1)
+
+nyc_final.to_csv('nyc_taxi_final.csv')
+
+gg = pd.read_csv('nyc_taxi_final.csv')
 
 
 nyc_taxi_may_dec2015 = pd.read_csv('Final Dataset/nyc_taxi_may_dec2015.csv')
