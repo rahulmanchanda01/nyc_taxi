@@ -12,6 +12,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import os 
+from uszipcode import ZipcodeSearchEngine
+search = ZipcodeSearchEngine()
 
 #Set seed and parameters for randomsampling
 np.random.seed(456)
@@ -31,6 +33,13 @@ for i in range(8):
     nyc_taxi_may_dec2015 = nyc_taxi_may_dec2015.append(nyc_taxi_temp) 
     
 nyc_zips = pd.read_csv('zips.csv')
+def cordnts_zip(a,b):
+    try:
+        location = search.by_coordinate(a,b)
+        lctn_zip = location[0]["Zipcode"]
+    except:
+        lctn_zip = ''
+    return lctn_zip
 
 ##Remove temporary variables
 del nyc_taxi_temp,nlines,lines2skip,i,files,nlinesrandomsample
@@ -42,9 +51,31 @@ nyc_taxi_may_dec2015['tpep_pickup_datetime'] = pd.to_datetime(\
 nyc_taxi_may_dec2015['Month'] = nyc_taxi_may_dec2015['tpep_pickup_datetime'].dt.month
 nyc_taxi_may_dec2015['Time'] = nyc_taxi_may_dec2015['tpep_pickup_datetime'].dt.time
 nyc_taxi_may_dec2015['Day'] = nyc_taxi_may_dec2015['tpep_pickup_datetime'].dt.day
-nyc_taxi_may_dec2015 = nyc_taxi_may_dec2015.set_index(np.arange(0,800000))
+
 nyc_taxi_may_dec2015 = nyc_taxi_may_dec2015[(nyc_taxi_may_dec2015['pickup_latitude'] != 0 ) \
                         & (nyc_taxi_may_dec2015['pickup_longitude']!=0 )]  
+nyc_taxi_may_dec2015 = nyc_taxi_may_dec2015.set_index(np.arange(0,788757))                        
+                        
+nyc_taxi100k = nyc_taxi_may_dec2015[0:100000]
+nyc_taxi100_200k = nyc_taxi_may_dec2015[100000:200000]
+nyc_taxi200k_end = nyc_taxi_may_dec2015[200000:788757]
+
+nyc_taxi100k['pickup_zip'] = nyc_taxi100k.apply(lambda x : 
+    cordnts_zip(x['pickup_latitude'],x['pickup_longitude']),axis=1)   
+nyc_taxi100_200k['pickup_zip'] = nyc_taxi100_200k.apply(lambda x : 
+    cordnts_zip(x['pickup_latitude'],x['pickup_longitude']),axis=1)
+nyc_taxi200k_end['pickup_zip'] = nyc_taxi200k_end.apply(lambda x : 
+    cordnts_zip(x['pickup_latitude'],x['pickup_longitude']),axis=1)  
+
+nyc_taxi100k.to_csv('nyc_taxi100k.csv')
+nyc_taxi100_200k.to_csv('nyc_taxi100_200k.csv')
+nyc_taxi200k_end.to_csv('nyc_taxi200k_end.csv')   
+
+nyc_final = nyc_taxi100k.append(nyc_taxi100_200k).append(nyc_taxi200k_end)
+nyc_final.to_csv('nyc_final.csv')
+
+nyc_final['dropoff_zip'] = nyc_final.apply(lambda x : 
+    cordnts_zip(x['dropoff_latitude'],x['dropoff_longitude']),axis=1)  
 
 
 nyc_taxi_may_dec2015 = pd.read_csv('Final Dataset/nyc_taxi_may_dec2015.csv')
