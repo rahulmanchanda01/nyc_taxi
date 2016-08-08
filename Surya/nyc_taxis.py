@@ -11,14 +11,23 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import os 
 from geopy.geocoders import Nominatim
+import gmplot
+import geocoder 
+
 geolocator = Nominatim()
 
-def cordnts_zip(a,b):
-    cordnts = str(a) + ',' + str(b)
-    location = geolocator.reverse(cordnts)
-    lctn_zip = int(location.raw['address']['postcode'][0:5])
-    return lctn_zip
+#def cordnts_zip(a,b):
+#    cordnts = str(a) + ',' + str(b)
+#    location = geolocator.reverse(cordnts)
+#    lctn_zip = int(location.raw['address']['postcode'][0:5])
+#    return lctn_zip
 
+def cordnts_zip(a,b):
+    location = geocoder.google([a,b],method ="reverse")
+    lctn_zip = location.postal
+    return lctn_zip
+    
+    
 np.random.seed(456)
 nlinesrandomsample = 100000
 nlines = list([13158262,12324935,11562783,11130304,11225063,12315488,11312676,\
@@ -48,31 +57,50 @@ nyc_taxi_may_dec2015 = nyc_taxi_may_dec2015[(nyc_taxi_may_dec2015['pickup_latitu
 nyc_taxi_may_dec2015['location_zip'] = nyc_taxi_may_dec2015.apply(lambda x : 
     cordnts_zip(x['pickup_latitude'],x['pickup_longitude']),axis=1)
 
-pickup_loc = np.array([nyc_taxi_12['pickup_longitude'],nyc_taxi_12['pickup_latitude']]) 
+### Plottong pickup locations
+     
+new_style = {'grid': False} #Remove grid   
+from matplotlib import rcParams  
+rcParams['figure.figsize'] = (17.5, 17) #Size of figure  
+rcParams['figure.dpi'] = 250
 
-a = nyc_taxi_may_dec2015[93:94][['pickup_latitude','pickup_longitude']]
-a['location_zip'] = a.apply(lambda x : 
-    cordnts_zip(x['pickup_latitude'],x['pickup_longitude']),axis=1)
-    
-fig = plt.figure()
 
-themap = Basemap(projection='gall',
-              llcrnrlon = -40.917577,              # lower-left corner longitude
-              llcrnrlat = -74.25909,               # lower-left corner latitude
-              urcrnrlon = 40.917577,               # upper-right corner longitude
-              urcrnrlat = -74.25909,               # upper-right corner latitude
-              resolution = 'l',
-              area_thresh = 100000.0,
-              )
-themap.drawcoastlines()
-themap.drawcountries()
-themap.fillcontinents(color = 'gainsboro')
-themap.drawmapboundary(fill_color='steelblue')
+P=nyc_taxi_may_dec2015.plot(kind='scatter', x='pickup_longitude', y='pickup_latitude',color='white',\
+        xlim=(-74.06,-73.77),ylim=(40.61, 40.91),s=.02,alpha=.6)
+P.set_axis_bgcolor('#800000') #Background Color
 
-x, y = themap(pickup_loc[0],pickup_loc[1])
-themap.plot(x, y, 
-                'o',                    # marker shape
-               color='Indigo',         # marker colour
-               markersize=4            # marker size
-               )
-plt.show()
+### Plottong pickup locations
+ 
+new_style = {'grid': False} #Remove grid   
+from matplotlib import rcParams  
+rcParams['figure.figsize'] = (17.5, 17) #Size of figure  
+rcParams['figure.dpi'] = 250
+
+
+P=nyc_taxi_may_dec2015.plot(kind='scatter', x='dropoff_longitude', y='dropoff_latitude',color='white',\
+        xlim=(-74.06,-73.77),ylim=(40.61, 40.91),s=.02,alpha=.6)
+P.set_axis_bgcolor('#800000') #Background Color
+
+#m = Basemap(projection='mill',llcrnrlat=20,urcrnrlat=50,\
+#            llcrnrlon=-130,urcrnrlon=-60,resolution='c')
+#fig = plt.figure()
+#themap = Basemap(projection='gall',llcrnrlat=35.,urcrnrlat=50,\
+#                llcrnrlon=-130,urcrnrlon=-60,resolution='l')
+
+#themap.drawcoastlines()
+#themap.drawcountries()
+#themap.fillcontinents(color = 'yellow')
+#themap.drawmapboundary(fill_color='blue')
+#
+#a = nyc_taxi_may_dec2015['pickup_longitude'].head(25)
+#b = nyc_taxi_may_dec2015['pickup_latitude'].head(25)
+#
+#for x1,y1 in zip(a,b):
+#    x, y = themap(x1,y1)               
+#    themap.plot(x, y, 
+#                'o',                    # marker shape
+#                color='red',         # marker colour
+#                markersize=5           # marker size
+#                )
+#    
+#plt.show()
