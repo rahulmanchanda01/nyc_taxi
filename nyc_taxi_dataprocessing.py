@@ -23,7 +23,7 @@ search = ZipcodeSearchEngine()
 np.random.seed(456)
 nlinesrandomsample = 100000
 nlines = list([13158262,12324935,11562783,11130304,11225063,12315488,11312676,\
-                1048575])
+                1048575]) #Number of lines in the raw dataset
 files = os.listdir('Datasets')
 
 #==============================================================================
@@ -95,5 +95,5 @@ cordnts_zip(x['dropoff_latitude'],x['dropoff_longitude']),axis=1)
 #==============================================================================
 #==============================================================================
 # Run only to load the file from this point onwards                        
-# nyc_taxi_may_dec2015 = pd.read_csv('nyc_taxi_may_dec2015.csv')
+# nyc_taxi_may_dec2015 = pd.read_csv('Dataset/nyc_taxi_may_dec2015.csv', usecols = range(2,27))
 #==============================================================================
