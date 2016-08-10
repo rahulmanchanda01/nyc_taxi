@@ -70,7 +70,7 @@ nyc_taxi_may_dec2015['Time'] = nyc_taxi_may_dec2015['tpep_pickup_datetime'].dt.t
 nyc_taxi_may_dec2015['Day'] = nyc_taxi_may_dec2015['tpep_pickup_datetime'].dt.day
 
 #==============================================================================
-# Remove erroneoys coordinates (0,0) from the dataset
+# Remove erroneous coordinates (0,0) from the dataset
 #==============================================================================
 nyc_taxi_may_dec2015 = \
 nyc_taxi_may_dec2015[(nyc_taxi_may_dec2015['pickup_latitude'] != 0 ) & \
