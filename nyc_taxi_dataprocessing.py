@@ -23,8 +23,8 @@ search = ZipcodeSearchEngine()
 np.random.seed(456)
 nlinesrandomsample = 100000
 nlines = list([13158262,12324935,11562783,11130304,11225063,12315488,11312676,\
-                1048575]) #Number of lines in the raw dataset
-files = os.listdir('Datasets')
+                1048575]) #Number of lines in each of the raw datasets
+files = os.listdir('C:/MyGit/MSBA/nyc_taxi/Monthly Raw Datasets')
 
 #==============================================================================
 # Initialize empty dataset
@@ -37,7 +37,8 @@ nyc_taxi_may_dec2015 = pd.DataFrame()
 for i in range(8):
     lines2skip = np.random.choice(np.arange(1,nlines[i]+1), \
     (nlines[i]-nlinesrandomsample), replace=False)
-    nyc_taxi_temp = pd.read_csv('Datasets/'+files[i],skiprows = lines2skip)
+    nyc_taxi_temp = pd.read_csv('C:/MyGit/MSBA/nyc_taxi/Monthly Raw Datasets/'+files[i],skiprows = lines2skip)
+    nyc_taxi_temp=nyc_taxi_temp.rename(columns = {'RateCodeID':'RatecodeID'})
     nyc_taxi_may_dec2015 = nyc_taxi_may_dec2015.append(nyc_taxi_temp) 
 
 #==============================================================================
@@ -60,7 +61,9 @@ del nyc_taxi_temp,nlines,lines2skip,i,files,nlinesrandomsample
 # Convert datetime object column to datetime series
 #==============================================================================
 nyc_taxi_may_dec2015['tpep_pickup_datetime'] = pd.to_datetime(\
-                nyc_taxi_may_dec2015['tpep_pickup_datetime'])
+                nyc_taxi_may_dec2015['tpep_pickup_datetime'],dayfirst = True)
+nyc_taxi_may_dec2015['tpep_dropoff_datetime'] = pd.to_datetime(\
+                nyc_taxi_may_dec2015['tpep_dropoff_datetime'],dayfirst = True)
 
 #==============================================================================
 # Extract month, time and day from Timestamp
@@ -91,9 +94,13 @@ nyc_taxi_may_dec2015['dropoff_zip'] = nyc_taxi_may_dec2015.apply(lambda x:\
 cordnts_zip(x['dropoff_latitude'],x['dropoff_longitude']),axis=1)                 
                         
 #==============================================================================
-# nyc_taxi_may_dec2015.to_csv('nyc_taxi_may_dec2015.csv')
+nyc_taxi_may_dec2015.to_csv('nyc_taxi_may_dec2015.csv')
 #==============================================================================
 #==============================================================================
 # Run only to load the file from this point onwards                        
 # nyc_taxi_may_dec2015 = pd.read_csv('Dataset/nyc_taxi_may_dec2015.csv', usecols = range(2,27))
+#==============================================================================
+
+#==============================================================================
+# Add an airport indicator for each row
 #==============================================================================
