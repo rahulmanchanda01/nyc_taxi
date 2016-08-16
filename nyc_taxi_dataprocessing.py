@@ -64,7 +64,7 @@ nyc_taxi_may_dec2015['tpep_pickup_datetime'] = pd.to_datetime(\
                 nyc_taxi_may_dec2015['tpep_pickup_datetime'],dayfirst = True)
 nyc_taxi_may_dec2015['tpep_dropoff_datetime'] = pd.to_datetime(\
                 nyc_taxi_may_dec2015['tpep_dropoff_datetime'],dayfirst = True)
-
+nyc_taxi_may_dec2015['Time'] = pd.to_datetime(nyc_taxi_may_dec2015['Time'])
 #==============================================================================
 # Extract month, time and day from Timestamp
 #==============================================================================
