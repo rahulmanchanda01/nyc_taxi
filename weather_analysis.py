@@ -22,8 +22,7 @@ import os
 
 #======================= Taxi Data ============================
 # Loading and cleaning the taxi_dataset
-taxi_data = pd.read_csv('nyc_taxi_may_dec2015_newfile.csv',usecols = range(1,25))#,na_values = 'N.A.', parse_dates = ['tpep_pickup_datetime'], infer_datetime_format=True)
-#taxi_data = taxi_data.drop('Unnamed: 0', 1)
+taxi_data = pd.read_csv('nyc_taxi_may_dec2015_newfile.csv',usecols = range(1,25))
 # Creating just a date column to merge the weather data
 taxi_data['Date'] = pd.to_datetime(taxi_data["tpep_pickup_datetime"]).dt.date
 
@@ -32,13 +31,7 @@ taxi_data['Date'] = pd.to_datetime(taxi_data["tpep_pickup_datetime"]).dt.date
 # Loading and cleaning the weather_dataset
 weather_data = pd.read_csv('Weather_Data.csv')#,na_values = 'N.A.', infer_datetime_format=True)
 weather_data.columns = weather_data.columns.str.strip()
-weather_data['Date'] =  pd.to_datetime(weather_data['Date'])
-
-testweather = weather_data[(weather_data['Date'] < datetime.strptime('20151201','%Y%m%d')) & (weather_data['Date'] > datetime.strptime('20150430','%Y%m%d'))]
-# Converting date column to datetime, easier to merge
-#weather_data['Date'] = pd.to_datetime(weather_data["Date"])
-#weather_data['Date'] = [d.date() for d in weather_data["Date"]]
-
+weather_data['Date'] =  pd.to_datetime(weather_data['Date']).dt.date
 
 # ======================= Final Taxi Dataset =====================
 # Creating a final dataset by merging both the taxi data and the weather data
@@ -73,12 +66,70 @@ precipitation.append(x[2]/y['0.2 - 0.4'].count())
 precipitation.append(x[3]/y['0.4 - 0.6'].count())
 precipitation.append(x[4]/y['> 0.6'].count())
 
+#======================== Precipitation's effect on the number of rides for Yellow Taxis ============
 precipitation = pd.Series(precipitation,index = ['No','0 - 0.2','0.2 - 0.4','0.4 - 0.6','> 0.6'])
 precipitation.plot(kind='bar')
 plt.xlabel('Precipitation in inches')
 plt.ylabel('Average Daily Trips')
 plt.title('Precipitation vs NYC Taxi Trips')
 plt.show()
+
+#======================== ANOVA analysis ========================
+# To check if the mean of rides are different for different level of precipitation
+t1 = taxi_dataset_precipitation[taxi_dataset_precipitation['categories'] == 'No']['Date']
+t2 = DataFrame(t1, columns = ['Date'])
+t3 = t2.groupby(['Date']).size()
+
+t4 = taxi_dataset_precipitation[taxi_dataset_precipitation['categories'] == '0 - 0.2']['Date']
+t5 = DataFrame(t4, columns = ['Date'])
+t6 = t5.groupby(['Date']).size()
+
+t7 = taxi_dataset_precipitation[taxi_dataset_precipitation['categories'] == '0.2 - 0.4']['Date']
+t8 = DataFrame(t7, columns = ['Date'])
+t9 = t8.groupby(['Date']).size()
+
+t10 = taxi_dataset_precipitation[taxi_dataset_precipitation['categories'] == '0.4 - 0.6']['Date']
+t11 = DataFrame(t10, columns = ['Date'])
+t12 = t11.groupby(['Date']).size()
+
+t13 = taxi_dataset_precipitation[taxi_dataset_precipitation['categories'] == '> 0.6']['Date']
+t14 = DataFrame(t13, columns = ['Date'])
+t15 = t14.groupby(['Date']).size()
+
+tfinal = DataFrame({'a':t3, 'b':t6, 'c':t9, 'd':t12, 'e':t15})
+tfinal.fillna(tfinal.mean())
+
+t16 = DataFrame(t3, columns = ['No'])
+t17 = DataFrame(t6, columns = ['0 - 0.2'])
+t18 = DataFrame(t9, columns = ['0.2 - 0.4'])
+t19 = DataFrame(t12, columns = ['0.4 - 0.6'])
+t20 = DataFrame(t15, columns = ['> 0.6'])
+
+
+#======================== ANOVA test
+from scipy import stats
+f_val, p_val = stats.f_oneway(t3, t6, t9, t12, t15)
+
+print ('\n')
+print ('We observe the p-value to be {:.2f}').format(p_val)
+print ('Thus, we can accept Ho and conclude that the average rides irrespective of the precipitation are same')
+
+#================== Box plot showing the variation in number of rides based on precipitation ======================
+data_to_plot = [t3, t6, t9, t12, t15]
+fig = plt.figure(1, figsize=(9, 6))
+ax = fig.add_subplot(111)
+bp = ax.boxplot(data_to_plot)
+ax.set_xticklabels(['No', '0 - 0.2', '0.2 - 0.4', '0.4 - 0.6', '> 0.6'])
+ax.get_xaxis().tick_bottom()
+ax.get_yaxis().tick_left()
+
+
+
+
+
+
+
+
 
 
 
