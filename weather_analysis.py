@@ -22,7 +22,7 @@ import os
 
 #======================= Taxi Data ============================
 # Loading and cleaning the taxi_dataset
-taxi_data = pd.read_csv('nyc_taxi_may_dec2015_newfile.csv',usecols = range(1,25))
+taxi_data = pd.read_csv('nyc_taxi_may_nov_2015.csv',usecols = range(1,25))
 # Creating just a date column to merge the weather data
 taxi_data['Date'] = pd.to_datetime(taxi_data["tpep_pickup_datetime"]).dt.date
 
@@ -108,20 +108,20 @@ t20 = DataFrame(t15, columns = ['> 0.6'])
 
 #======================== ANOVA test
 from scipy import stats
-f_val, p_val = stats.f_oneway(t3, t6, t9, t12, t15)
+    f_val, p_val = stats.f_oneway(t3, t6, t9, t12, t15)
 
 print ('\n')
 print ('We observe the p-value to be {:.2f}').format(p_val)
 print ('Thus, we can accept Ho and conclude that the average rides irrespective of the precipitation are same')
 
 #================== Box plot showing the variation in number of rides based on precipitation ======================
-data_to_plot = [t3, t6, t9, t12, t15]
-fig = plt.figure(1, figsize=(9, 6))
-ax = fig.add_subplot(111)
-bp = ax.boxplot(data_to_plot)
-ax.set_xticklabels(['No', '0 - 0.2', '0.2 - 0.4', '0.4 - 0.6', '> 0.6'])
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
+    data_to_plot = [t3, t6, t9, t12, t15]
+    fig = plt.figure(1, figsize=(9, 6))
+    ax = fig.add_subplot(111)
+    bp = ax.boxplot(data_to_plot)
+    ax.set_xticklabels(['No', '0 - 0.2', '0.2 - 0.4', '0.4 - 0.6', '> 0.6'])
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().tick_left()
 
 
 
